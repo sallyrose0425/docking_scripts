@@ -1,0 +1,47 @@
+This script was developed to set up the receptor.txt input file needed by VinaMPI [1].
+
+This script finds the size_x size_y size_z center_x center_y and center_z parameters needed by Autodock Vina [2] in order to specify the docking box.
+
+The docking sites used with this script were obtained using MOE [3].
+
+Directions to get docking sites from MOE:
+
+1) Open receptor file in MOE
+2) Compute -> Site Finder ...
+3) Click on Apply in the Site Finder box to populate the box with potential binding sites
+4) Click on the site you want to use
+5) Check the Select Residues in SE box
+6) From the main MOE menu select File -> Save
+7) Check the Only Selected box and choose Residues from the dropdown menu
+8) Choose Protein Data Bank (.pdb) from the Format dropdown menu
+9) Name the file $receptorbasename_site$n.pdb and save (if the receptor file is named receptor.pdb then $receptorbasename = receptor and n is the docking site number for the particular receptor e.g. if you choose 2 different docking sites for receptor.pdb you will have receptor_site1.pdb and receptor_site2.pdb)
+10) Repeat (4)-(9) for each site you want to use in the loaded receptor file
+11) File -> Close OK
+12) Repeat (1)-(11) for each receptor file for your screen
+
+Directions to create the receptors.txt file:
+
+1) Put all .pdb files of the docking sites obtained above in one directory
+2) Change line 11 in get_sites.py to point to your VMD executable
+3) Make sure line 31 of get_sites.py points to get_cell_dim.tcl
+4) In a terminal type: python get_sites.py $directory
+where $directory is the path to a directory containing .pdb files containing docking sites named $receptorbasename_site$n.pdb
+5) You should now have a file named receptors.txt to be used with VinaMPI, edit the first line by appending cpu=$x where $x is the number of threads to be used by each docking task (1 if not using threading)
+
+Directions to create a pdbqt file to correspond with each docking site
+
+1) Follow directions to do receptor predocking so that you have a pdbqt for each receptor with the same $receptor names above
+2) python dup_receptors.py $receptors $sites $new
+$receptors = path to directory containing receptor pdbqt files
+$sites = path to directory containing pdb files for all the docking sites
+$new = path to directory where receptor pdbqt files will be saved named after each site
+3) The $new directory should now contain a pdbqt receptor file named after each docking site
+
+
+REFERENCES
+
+[1] S. R. Ellingson, J. C. Smith, J. Baudry. J. Comput. Chem. 2013, DOI: 10.1002/jcc.23367.
+
+[2] O. Trott, A. J. Olson, AutoDock Vina: improving the speed and accuracy of docking with a new scoring function, efficient optimization and multithreading, Journal of Computational Chemistry 31 (2010) 455-461.
+
+[3] Molecular Operating Environment (MOE), 2012.10; Chemical Computing Group Inc., 1010 Sherbooke St. West, Suite #910, Montreal, QC, Canada, H3A 2R7, 2012.
